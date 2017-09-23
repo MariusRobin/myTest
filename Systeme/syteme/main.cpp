@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <unistd.h>
 #include <iostream>
 #include <vector>
@@ -16,7 +17,7 @@ void action_help(vector<string> mot){
     cout << "- tapez cd suivi d'un fichier pour changer de fichier" << endl;
     cout << "- tapez ! pour lancer un sous shell" << endl;
     cout << "- tapez ! suivi d'une commande pour executer une commande dans le sous shell" << endl;
-    cout << "- tapez rappel suivi du timer en seconde et du texte de votre rappel" << endl;
+    cout << "- tapez rappel suivi du timer en secondes et du texte de votre rappel" << endl;
 }
 
 void action_exit(vector<string> mot){
@@ -32,8 +33,8 @@ void action_sousBashShell(vector<string> mot){
         for (unsigned int i=1; i< mot.size(); i++){
             action << mot[i]+" ";
             act = action.str();
-            system(act.c_str());
         }
+        system(act.c_str());
     }
     else{
         system("/bin/bash");
@@ -42,33 +43,44 @@ void action_sousBashShell(vector<string> mot){
 
 void action_cd(vector<string> mot){
     string fichier;
+
     if (mot.size()>1)
     {
         fichier = mot[1];
     }
     else
-        fichier = "HOME";
+    {
+        fichier = "/home";
+    }
+    char directory[1024];
+    getcwd(directory, sizeof(directory));
+    printf("Vous êtiez dans : %s\n", directory);
 
-    chdir(fichier.c_str());
+    if(chdir(fichier.c_str()) == 0) {
+        getcwd(directory, sizeof(directory));
+        printf("Vous êtes désormais dans : %s\n", directory);
+    }
+    else cerr << "Erreur, veuillez réessayer" << endl;
 }
 
 void action_rappel(vector<string> mot){
     string rappel;
     pid_t p = fork();
-    if(mot.size()>3)
+
+    if(mot.size()>2)
     {
         if (p == 0){
-            sleep(5);
+            sleep(atoi(mot[1].c_str()));
             for (unsigned int i=2; i<mot.size(); i++){
-                rappel += mot[i];
+                rappel += mot[i]+" ";
             }
-            cout << "Rapel : " << rappel <<endl;
+            cout << "Rappel : " << rappel <<endl;
         }
 
     }
     else
     {
-        cout << "il manque des arguments" << endl;
+        cout << "Il manque des arguments" << endl;
     }
 }
 
@@ -98,10 +110,10 @@ int main()
     while (!fini)
     {
         string chaine;
-        cout << ">";
+        cout << "> ";
         getline(cin, chaine);
         while (chaine.size()==0){
-            cout << ">";
+            cout << "> ";
             getline(cin, chaine);
         }
         vector<string> mot = decouper(string(chaine));
