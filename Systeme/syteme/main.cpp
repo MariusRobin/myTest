@@ -11,11 +11,12 @@ using Action = void(*)(vector<string>);
 bool fini;
 
 void action_help(vector<string> mot){
- cout << "-----------"<< mot[0] << "-----------" << endl;
- cout << "- tapez exit pour arreter" << endl;
- cout << "- tapez cd suivi d'un fichier pour changer de fichier" << endl;
- cout << "- tapez ! pour lancer un sous shell" << endl;
- cout << "- tapez ! suivi d'une commande pour executer une commande dans le sous shell" << endl;
+    cout << "-----------"<< mot[0] << "-----------" << endl;
+    cout << "- tapez exit pour arreter" << endl;
+    cout << "- tapez cd suivi d'un fichier pour changer de fichier" << endl;
+    cout << "- tapez ! pour lancer un sous shell" << endl;
+    cout << "- tapez ! suivi d'une commande pour executer une commande dans le sous shell" << endl;
+    cout << "- tapez rappel suivi du timer en seconde et du texte de votre rappel" << endl;
 }
 
 void action_exit(vector<string> mot){
@@ -46,9 +47,29 @@ void action_cd(vector<string> mot){
         fichier = mot[1];
     }
     else
-       fichier = "HOME";
+        fichier = "HOME";
 
     chdir(fichier.c_str());
+}
+
+void action_rappel(vector<string> mot){
+    string rappel;
+    pid_t p = fork();
+    if(mot.size()>3)
+    {
+        if (p == 0){
+            sleep(5);
+            for (unsigned int i=2; i<mot.size(); i++){
+                rappel += mot[i];
+            }
+            cout << "Rapel : " << rappel <<endl;
+        }
+
+    }
+    else
+    {
+        cout << "il manque des arguments" << endl;
+    }
 }
 
 vector<string> decouper(const string &ligne)
@@ -66,7 +87,8 @@ const map<string, Action> actions{
     { "help", action_help},
     { "exit", action_exit},
     { "!",action_sousBashShell},
-    { "cd", action_cd}
+    { "cd", action_cd},
+    { "rappel", action_rappel}
 };
 
 int main()
@@ -78,6 +100,10 @@ int main()
         string chaine;
         cout << ">";
         getline(cin, chaine);
+        while (chaine.size()==0){
+            cout << ">";
+            getline(cin, chaine);
+        }
         vector<string> mot = decouper(string(chaine));
 
         auto it = actions.find(mot[0]);
