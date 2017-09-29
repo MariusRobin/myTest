@@ -1,0 +1,10 @@
+http://info-timide.iut.u-bordeaux.fr/Cours2017/Home/TD#
+
+Base de donnée : classique_web
+
+http://info-timide.iut.u-bordeaux.fr/Cours/BD/Admin.php?mssql=info-dormeur&username=ETD&db=Classique_Web&ns=dbo
+
+MS SQL
+id ETD
+pass ETD
+

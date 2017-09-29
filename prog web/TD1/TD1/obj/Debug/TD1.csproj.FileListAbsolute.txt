@@ -1,0 +1,6 @@
+\\iut.bx1\Etudiants\Home\mrobin007\Desktop\prog web\TD1\TD1\bin\Debug\TD1.exe.config
+\\iut.bx1\Etudiants\Home\mrobin007\Desktop\prog web\TD1\TD1\bin\Debug\TD1.exe
+\\iut.bx1\Etudiants\Home\mrobin007\Desktop\prog web\TD1\TD1\bin\Debug\TD1.pdb
+\\iut.bx1\Etudiants\Home\mrobin007\Desktop\prog web\TD1\TD1\obj\Debug\TD1.csprojResolveAssemblyReference.cache
+\\iut.bx1\Etudiants\Home\mrobin007\Desktop\prog web\TD1\TD1\obj\Debug\TD1.exe
+\\iut.bx1\Etudiants\Home\mrobin007\Desktop\prog web\TD1\TD1\obj\Debug\TD1.pdb
