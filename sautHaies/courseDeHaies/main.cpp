@@ -3,13 +3,13 @@
 #include <stdio.h>
 #include "wait.h"
 #include "vector"
-#include "array"
+#include "map"
 
 
 using namespace std;
-vector<pid_t> placement;
+vector<char*> placement;
 int place=1;
-vector<char*> nomEquipe;
+map<int,char*> nomEquipe;
 
 int attendre(){
     return  (1+rand()%(11-1+1));
@@ -17,16 +17,24 @@ int attendre(){
 
 void lancerProcessusFils(int argc, char *argv[])
 {
+
     int i, j;
     int estTombeOuPas;
 
+
     /* boucle pour creer les 6 processus fils */
     for (i=1; i < argc; i++) {
-        switch (fork()) {
+
+        pid_t rc = fork();
+        nomEquipe[rc]=argv[i];
+
+        switch (rc) {
+
         case -1: fprintf(stderr, "Erreur dans %d\n", getpid());
             perror("fork");
             exit(1);
         case 0: /* On est dans un fils */
+
             for (j=1;j<=4;j++){
                 srand(time(NULL)-getpid());
                 estTombeOuPas = (int)(rand() % 10) + 1;
@@ -48,7 +56,8 @@ void lancerProcessusFils(int argc, char *argv[])
 
 
             /* Ne pas oublier de sortir sinon on cree fact(6) processus */
-            exit(2);
+
+            exit(EXIT_SUCCESS);
         default:
             ;/* On est dans le pere; ne rien faire */
         }
@@ -60,8 +69,8 @@ void affichageArrive(int argc, char *argv[])
     int status;
     for (int i=1;i<argc;i++)
     {
-        int leWait = wait(&status);
-        if (WEXITSTATUS(status)==2)
+        char * leWait = nomEquipe[wait(&status)];
+        if (WEXITSTATUS(status)==EXIT_SUCCESS)
         {
             placement.push_back(leWait);
         }
