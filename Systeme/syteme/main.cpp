@@ -4,12 +4,19 @@
 #include <vector>
 #include <sstream>
 #include "map"
+#include "wait.h"
 
 using namespace std;
 
 using Action = void(*)(vector<string>);
 
 bool fini;
+
+pid_t lepid;
+
+map<string, pid_t> jobs;
+
+vector<string> lesnomdesgens;
 
 void action_help(vector<string> mot){
     cout << "-----------"<< mot[0] << "-----------" << endl;
@@ -84,6 +91,14 @@ void action_rappel(vector<string> mot){
     }
 }
 
+void action_jobs(vector<string> mot)
+{
+    for (auto elem : lesnomdesgens)
+    {
+        cout << "[" << jobs[elem] << "] : " << elem << endl;
+    }
+}
+
 vector<string> decouper(const string &ligne)
 {
     vector<string> mots;
@@ -100,7 +115,8 @@ const map<string, Action> actions{
     { "exit", action_exit},
     { "!",action_sousBashShell},
     { "cd", action_cd},
-    { "rappel", action_rappel}
+    { "rappel", action_rappel},
+    { "jobs", action_jobs}
 };
 
 int main()
@@ -118,16 +134,69 @@ int main()
         }
         vector<string> mot = decouper(string(chaine));
 
+        string test;
         auto it = actions.find(mot[0]);
-        if(it == actions.end()){
-            cout << "Commande '" << mot[0] << "' inconnue" << endl;
-        }
-        else{
-            it->second (mot);
-        }
 
+        if(it == actions.end()){
+            pid_t p = fork();
+            string lemot;
+            for (string elem : mot)
+            {
+                lemot += elem+" ";
+            }
+            lepid = p;
+            if (mot[mot.size()-1]=="&")
+            {
+                jobs[lemot] = lepid;
+                lesnomdesgens.push_back(lemot);
+            }
+
+            if(p==-1){
+                cerr << "Erreur" << endl;
+            }
+            else
+                if (p==0){
+                    const char * a[mot.size()];
+                    int i=0;
+                    for(string elem : mot)
+                    {
+                        if(elem != "&")
+                        {
+                            a[i]= elem.c_str();
+                            i++;
+                        }
+                        else
+                        {
+                            test = elem;
+                        }
+
+                    }
+                    a[i]=nullptr;
+
+                execvp(a[0], const_cast<char **>(a));
+                exit(EXIT_SUCCESS);
+        }
+    }
+    else{
+        it->second (mot);
     }
 
-    return 0;
+    int status;
+    if(mot[mot.size()-1] != "&")
+    {
+        wait(&status);
+    }
+    else
+    {
+        cout << "[" << lepid << "]";
+        for (int i =0;i<mot.size()-1;i++)
+        {
+            cout << " " << mot [i];
+        }
+        cout << endl;
+    }
+}
+
+return 0;
 }
 
