@@ -110,6 +110,23 @@ vector<string> decouper(const string &ligne)
     return mots;
 }
 
+void fin_fils(int sig){
+    pid_t p =wait(nullptr);
+    string lenom;
+    for (auto elem : lesnomdesgens)
+    {
+        if (jobs[elem]==p)
+        {
+            lenom=elem;
+            cout << "fin de " << lenom << " !" <<endl;
+            //cout << "> ";
+            jobs[elem] = 0;
+            jobs.erase(elem);
+            break;
+        }
+    }
+}
+
 const map<string, Action> actions{
     { "help", action_help},
     { "exit", action_exit},
@@ -121,6 +138,7 @@ const map<string, Action> actions{
 
 int main()
 {
+
     fini = false;
 
     while (!fini)
@@ -150,6 +168,8 @@ int main()
                 jobs[lemot] = lepid;
                 lesnomdesgens.push_back(lemot);
             }
+
+            signal(SIGCHLD, fin_fils);
 
             if(p==-1){
                 cerr << "Erreur" << endl;
@@ -184,7 +204,10 @@ int main()
     int status;
     if(mot[mot.size()-1] != "&")
     {
-        wait(&status);
+        if(mot[mot.size()-1] != "jobs")
+        {
+            wait(&status);
+        }
     }
     else
     {
