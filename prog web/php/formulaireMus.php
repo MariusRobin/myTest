@@ -7,7 +7,7 @@
 </head>
 <body>
   <h4> <a href="TD5.php"> < retour </a> </h4>
-  <h4> <a href="pageAcceuil.html.php"> Acceuil </a> </h4>
+  <h4> <a href="index.php"> Acceuil </a> </h4>
   <h1> Recherche d'un musicien</h1>
   <form method="post" action="repFormMus.php">
     <p>

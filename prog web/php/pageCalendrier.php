@@ -7,7 +7,7 @@
 </head>
 <body>
   <h4> <a href="cours2.php"> < retour </a> </h4>
-  <h4> <a href="pageAcceuil.html.php"> Acceuil </a> </h4>
+  <h4> <a href="index.php"> Acceuil </a> </h4>
   <h1>Calendrier </h1>
   <?php
   date_default_timezone_set('Europe/Paris');

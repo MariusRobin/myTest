@@ -6,7 +6,7 @@
  <title>Cours 1</title>
  </head>
  <body>
-   <h4> <a href="pageAcceuil.html.php"> Acceuil </a> </h4>
+   <h4> <a href="index.php"> Acceuil </a> </h4>
    <h1> TD 3 </h1>
  <h2> Sommaire </h2>
  <ul>

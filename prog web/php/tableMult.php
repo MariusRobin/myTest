@@ -7,7 +7,7 @@
 </head>
 <body>
   <h4> <a href="cours1.php"> < retour </a> </h4>
-  <h4> <a href="pageAcceuil.html.php"> Acceuil </a> </h4>
+  <h4> <a href="index.php"> Acceuil </a> </h4>
 
   <h1> Tables de multiplication </h1>
   <table border = 1>
