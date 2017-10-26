@@ -14,9 +14,7 @@ bool fini;
 
 pid_t lepid;
 
-map<string, pid_t> jobs;
-
-vector<string> lesnomdesgens;
+map<pid_t,string> jobs;
 
 void action_help(vector<string> mot){
     cout << "-----------"<< mot[0] << "-----------" << endl;
@@ -93,9 +91,25 @@ void action_rappel(vector<string> mot){
 
 void action_jobs(vector<string> mot)
 {
-    for (auto elem : lesnomdesgens)
+    for(map<pid_t, string>::iterator it=jobs.begin();it!=jobs.end();it++)
     {
-        cout << "[" << jobs[elem] << "] : " << elem << endl;
+        cout << "[" << it->first << "] : " << it->second << endl;
+    }
+
+}
+
+void fin_fils(int sig){
+    pid_t p =wait(nullptr);
+
+    for(map<pid_t, string>::iterator it=jobs.begin();it!=jobs.end();it++)
+    {
+        if((it->first)==p)
+        {
+
+            cout << "\nfin de " << it->second << " !"<<endl;
+            jobs.erase(it);
+            break;
+        }
     }
 }
 
@@ -110,23 +124,6 @@ vector<string> decouper(const string &ligne)
     return mots;
 }
 
-void fin_fils(int sig){
-    pid_t p =wait(nullptr);
-    string lenom;
-    for (auto elem : lesnomdesgens)
-    {
-        if (jobs[elem]==p)
-        {
-            lenom=elem;
-            cout << "fin de " << lenom << " !" <<endl;
-            //cout << "> ";
-            jobs[elem] = 0;
-            jobs.erase(elem);
-            break;
-        }
-    }
-}
-
 const map<string, Action> actions{
     { "help", action_help},
     { "exit", action_exit},
@@ -138,7 +135,6 @@ const map<string, Action> actions{
 
 int main()
 {
-
     fini = false;
 
     while (!fini)
@@ -158,19 +154,16 @@ int main()
         if(it == actions.end()){
             pid_t p = fork();
             string lemot;
+            lepid=p;
             for (string elem : mot)
             {
                 lemot += elem+" ";
             }
-            lepid = p;
             if (mot[mot.size()-1]=="&")
             {
-                jobs[lemot] = lepid;
-                lesnomdesgens.push_back(lemot);
+                jobs[p] = lemot;
             }
-
             signal(SIGCHLD, fin_fils);
-
             if(p==-1){
                 cerr << "Erreur" << endl;
             }
@@ -193,33 +186,31 @@ int main()
                     }
                     a[i]=nullptr;
 
-                execvp(a[0], const_cast<char **>(a));
-                exit(EXIT_SUCCESS);
+                    execvp(a[0], const_cast<char **>(a));
+                    exit(EXIT_SUCCESS);
+                }
         }
-    }
-    else{
-        it->second (mot);
+        else{
+            it->second (mot);
+        }
+
+        int status;
+        if(mot[mot.size()-1] != "&")
+        {
+            if(mot[mot.size()-1]!="jobs")
+                wait(&status);
+        }
+        else
+        {
+            cout << "[" << lepid << "]";
+            for (int i =0;i<mot.size()-1;i++)
+            {
+                cout << " " << mot [i];
+            }
+            cout << endl;
+        }
     }
 
-    int status;
-    if(mot[mot.size()-1] != "&")
-    {
-        if(mot[mot.size()-1] != "jobs")
-        {
-            wait(&status);
-        }
-    }
-    else
-    {
-        cout << "[" << lepid << "]";
-        for (int i =0;i<mot.size()-1;i++)
-        {
-            cout << " " << mot [i];
-        }
-        cout << endl;
-    }
-}
-
-return 0;
+    return 0;
 }
 
